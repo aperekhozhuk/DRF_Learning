@@ -3,7 +3,16 @@ from django.contrib.auth.models import User
 from .models import Post
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostListSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='author.id')
+
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'text', 'user_id')
+        extra_kwargs = {'text': {'write_only': True}}
+
+
+class PostDetailSerializer(serializers.ModelSerializer):
     user_id = serializers.ReadOnlyField(source='author.id')
 
     class Meta:
@@ -11,8 +20,14 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'text', 'user_id')
 
 
-class UserSerializer(serializers.ModelSerializer):
-    posts = serializers.PrimaryKeyRelatedField(many=True, queryset=Post.objects.all())
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    posts = serializers.HyperlinkedRelatedField(many=True, view_name='post-detail', read_only=True)
 
     class Meta:
         model = User
