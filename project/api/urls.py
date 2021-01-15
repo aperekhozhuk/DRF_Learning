@@ -5,6 +5,7 @@ from . import views
 
 router = routers.SimpleRouter()
 router.register(r'users', views.UserViewSet)
+router.register(r'posts', views.PostViewSet, basename='posts')
 
 users_router = routers.NestedSimpleRouter(router, r'users', lookup='user')
 users_router.register(r'posts', views.PostViewSet, basename='user-posts')

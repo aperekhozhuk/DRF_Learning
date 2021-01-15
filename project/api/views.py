@@ -21,7 +21,10 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     def get_queryset(self):
-        return Post.objects.filter(author_id=self.kwargs['user_pk'])
+        user_pk = self.kwargs.get('user_pk', None)
+        if user_pk == None:
+            return Post.objects.all()
+        return Post.objects.filter(author_id = user_pk)
 
     def get_serializer_class(self):
         if self.action in ('list', 'create'):

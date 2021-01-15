@@ -5,7 +5,9 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
 
     def has_permission(self, request, view):
         if view.action == 'create':
-            return int(view.kwargs.get('user_pk')) == request.user.id
+            user_pk = view.kwargs.get('user_pk', None)
+            if user_pk != None:
+                return int(user_pk) == request.user.id
         return True
 
     def has_object_permission(self, request, view, obj):
