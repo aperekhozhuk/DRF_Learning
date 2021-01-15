@@ -5,11 +5,10 @@ from .models import Post
 
 class PostListSerializer(serializers.ModelSerializer):
     user_id = serializers.ReadOnlyField(source='author.id')
-    url = serializers.HyperlinkedIdentityField(view_name='post-detail', read_only=True)
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'text', 'user_id', 'url')
+        fields = ('id', 'title', 'text', 'user_id')
         extra_kwargs = {'text': {'write_only': True}}
 
 
@@ -22,16 +21,14 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
 
 class UserListSerializer(serializers.ModelSerializer):
-    profile = serializers.HyperlinkedIdentityField(view_name='user-detail', read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'profile']
+        fields = ['id', 'username']
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    posts = serializers.HyperlinkedRelatedField(many=True, view_name='post-detail', read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'posts']
+        fields = ['id', 'username']

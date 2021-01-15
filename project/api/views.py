@@ -16,10 +16,12 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
     # Actually, I don't understand why we can set such permission classes
     # for ListCreate methods (ListCreate had only IsAuthenticatedOrReadOnly)
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+
+    def get_queryset(self):
+        return Post.objects.filter(author_id=self.kwargs['user_pk'])
 
     def get_serializer_class(self):
         if self.action in ('list', 'create'):
