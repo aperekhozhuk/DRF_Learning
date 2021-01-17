@@ -9,3 +9,9 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+    text = models.TextField()
+    author = models.ForeignKey(User, null=True, related_name='comments', on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, null=True, related_name='comments', on_delete=models.CASCADE)
