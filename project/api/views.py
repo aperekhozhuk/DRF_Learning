@@ -1,5 +1,5 @@
-from rest_framework import viewsets
-from .models import Post
+from rest_framework import viewsets, mixins
+from .models import Post, Comment
 from django.contrib.auth.models import User
 from . import serializers as api_serializers
 from rest_framework import permissions
@@ -33,3 +33,22 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class CommentViewSet(mixins.CreateModelMixin,
+    mixins.ListModelMixin, mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet):
+
+    # Creating, retrieving, listing comments of post
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = api_serializers.PostCommentSerializer
+
+    def get_queryset(self):
+        post_pk = self.kwargs.get('post_pk', None)
+        return Comment.objects.filter(post_id = post_pk)
+
+    def perform_create(self, serializer):
+        serializer.save(
+            author = self.request.user,
+            post_id = self.kwargs.get('post_pk')
+        )
