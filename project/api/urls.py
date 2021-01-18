@@ -9,6 +9,7 @@ router.register(r'posts', views.PostViewSet, basename='posts')
 
 users_router = routers.NestedSimpleRouter(router, r'users', lookup='user')
 users_router.register(r'posts', views.PostViewSet, basename='user-posts')
+users_router.register(r'comments', views.CommentReadOnlyViewSet, basename='user-comments')
 
 posts_router = routers.NestedSimpleRouter(router, r'posts', lookup='post')
 posts_router.register(r'comments', views.CommentViewSet, basename='post-comments')

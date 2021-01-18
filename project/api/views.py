@@ -35,17 +35,28 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class CommentViewSet(mixins.CreateModelMixin,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet):
+class CommentReadOnlyViewSet(mixins.ListModelMixin,
+    mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     # Creating, retrieving, listing comments of post
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    serializer_class = api_serializers.PostCommentSerializer
+
+    def get_serializer_class(self):
+        # If we don't look for Post's comments -> we look for User's comments
+        if self.kwargs.get('post_pk', None) == None:
+            return api_serializers.UserCommentSerializer
+        return api_serializers.PostCommentSerializer
 
     def get_queryset(self):
         post_pk = self.kwargs.get('post_pk', None)
+        # If we don't look for Post's comments -> we look for User's comments
+        if post_pk == None:
+            user_pk = self.kwargs.get('user_pk', None)
+            return Comment.objects.filter(author_id = user_pk)
         return Comment.objects.filter(post_id = post_pk)
+
+
+class CommentViewSet(CommentReadOnlyViewSet, mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def perform_create(self, serializer):
         serializer.save(
