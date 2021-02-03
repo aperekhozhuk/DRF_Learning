@@ -13,7 +13,7 @@ cd DRF_Learning
 ```
 3) Create venv, install dependencies, create DB and create superuser
 ```
-bash install.sh
+source install.sh
 ```
 ### Running:
 1) cd in root project directoty
